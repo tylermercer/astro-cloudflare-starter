@@ -32,7 +32,7 @@ Configure the following secrets in your repository (Settings > Secrets and Varia
 
 - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID. You can get this from the Cloudflare URL after logging in (which will be of the form `dash.cloudflare.com/[account-id]`)
 - `CLOUDFLARE_API_TOKEN` - A Cloudflare API token with the ability to modify your Pages project
-- `GH_PAT` - A GitHub Personal Access Token with read-only access to your repo's contents (for private repos).
+- `GH_PAT` - A [GitHub Personal Access Token](https://github.com/settings/tokens?type=beta) with read-only access to your repo's contents (only necessary for private repos).
 
 Push your repository to Github! You should see a pipeline run appear in the Actions tab of your repository. Once this completes successfully, your project is ready for development.
 
