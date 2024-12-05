@@ -1,48 +1,42 @@
-# Astro Starter Kit: Basics
+# Astroflare
 
-```sh
-npm create astro@latest -- --template basics
+An opinionated starter for Astro on Cloudflare.
+
+- Deploys to Cloudflare's global edge network
+- Uses GitHub actions for its deploy pipeline, unlocking daily builds and PR previews.
+- Uses the [@astrojs/cloudflare](https://docs.astro.build/en/guides/integrations-guide/cloudflare/) adapter and Astro's new intelligent `static` build mode. This allows you to opt-in to SSR on a per-route basis by adding `export const prerender = false` to a route.
+
+## Getting started
+
+Install dependencies:
+
+```bash
+npm install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+Update the project's `name` in `wrangler.toml`. Commit this change, but don't push yet:
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```toml
+name = "astroflare" # change this to what you want your Cloudflare project's name to be
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Build the site and deploy to Cloudflare. Wrangler will prompt you to create the Pages project as part of this step:
 
-## 🧞 Commands
+```bash
+npm run build
+npx wrangler pages deploy
+```
 
-All commands are run from the root of the project, from a terminal:
+Configure the following secrets in your repository (Settings > Secrets and Variables > Actions > New Repository Secret):
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+- `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID. You can get this from the Cloudflare URL after logging in (which will be of the form `dash.cloudflare.com/[account-id]`)
+- `CLOUDFLARE_API_TOKEN` - A Cloudflare API token with the ability to modify your Pages project
+- `GH_PAT` - A GitHub Personal Access Token with read-only access to your repo's contents (for private repos).
 
-## 👀 Want to learn more?
+Push your repository to Github! You should see a pipeline run appear in the Actions tab of your repository. Once this completes successfully, your project is ready for development.
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## FAQ
+
+### How do I turn off daily builds?
+
+Comment or remove the `cron` trigger in `.github/workflows/main.yml`.
