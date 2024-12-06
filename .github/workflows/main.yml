@@ -50,18 +50,16 @@ jobs:
         run: |
           npm ci
           npm run build
-          echo "result=built" >> $GITHUB_OUTPUT
 
       - name: Deploy to Cloudflare Pages
         id: deploy
-        if: steps.build_site.outputs.result == 'built'
         run: npx wrangler pages deploy --branch=${{ steps.extract_vars.outputs.branch }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Add preview URL to pull request
-        if: github.event_name == 'pull_request' && steps.build_site.outputs.result == 'built'
+        if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         with:
           comment_tag: deploy_preview
