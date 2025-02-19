@@ -2,11 +2,11 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import type { ICacheAdapter, ICacheProvider } from './Cache';
 
-export interface IBufferCacheProvider extends ICacheProvider<Buffer> {}
+export interface IStringCacheProvider extends ICacheProvider<string> {}
 
-export interface IBufferCacheAdapter extends ICacheAdapter<Buffer> {}
+export interface IStringCacheAdapter extends ICacheAdapter<string> {}
 
-class FileSystemBufferCacheAdapter implements IBufferCacheAdapter {
+class FileSystemStringCacheAdapter implements IStringCacheAdapter {
     constructor(private basePath: string) { }
 
     private getFilePath(namespace: string, key: string): string {
@@ -29,12 +29,12 @@ class FileSystemBufferCacheAdapter implements IBufferCacheAdapter {
         return typeof key === "string" && key.length > 0;
     }
 
-    async get(namespace: string, key: string): Promise<Buffer> {
+    async get(namespace: string, key: string): Promise<string> {
         const filePath = this.getFilePath(namespace, key);
         try {
-            return await fs.readFile(filePath);
+            return await fs.readFile(filePath, 'utf-8');
         } catch (error) {
-            if ((error as any).code === 'ENOENT') return Buffer.from('');
+            if ((error as any).code === 'ENOENT') return '';
             throw error;
         }
     }
@@ -49,10 +49,10 @@ class FileSystemBufferCacheAdapter implements IBufferCacheAdapter {
         }
     }
 
-    async set(namespace: string, key: string, value: Buffer): Promise<void> {
+    async set(namespace: string, key: string, value: string): Promise<void> {
         const filePath = this.getFilePath(namespace, key);
         await this.ensureDirectoryExists(path.dirname(filePath));
-        await fs.writeFile(filePath, Buffer.from(value as unknown as ArrayBuffer) as unknown as string);
+        await fs.writeFile(filePath, value, 'utf-8');
     }
 
     async delete(namespace: string, key: string): Promise<void> {
@@ -65,15 +65,15 @@ class FileSystemBufferCacheAdapter implements IBufferCacheAdapter {
     }
 }
 
-class BufferCacheProvider implements IBufferCacheProvider {
-    constructor(private namespace: string, private cacheAdapter: FileSystemBufferCacheAdapter) { }
+class StringCacheProvider implements IStringCacheProvider {
+    constructor(private namespace: string, private cacheAdapter: FileSystemStringCacheAdapter) { }
 
-    async get(key: string): Promise<Buffer> {
+    async get(key: string): Promise<string> {
         const value = await this.cacheAdapter.get(this.namespace, key);
-        return value as Buffer;
+        return value;
     }
 
-    async getOrCreate(key: string, valueFactory: () => Promise<Buffer> | Buffer): Promise<Buffer> {
+    async getOrCreate(key: string, valueFactory: () => Promise<string> | string): Promise<string> {
         if (await this.has(key)) {
             return this.get(key);
         }
@@ -86,8 +86,8 @@ class BufferCacheProvider implements IBufferCacheProvider {
         return this.cacheAdapter.has(this.namespace, key);
     }
 
-    async set(key: string, value: Buffer): Promise<void> {
-        const valueToCache = value instanceof Buffer ? value : Buffer.from(JSON.stringify(value));
+    async set(key: string, value: string): Promise<void> {
+        const valueToCache = typeof value === 'string' ? value : JSON.stringify(value);
         await this.cacheAdapter.set(this.namespace, key, valueToCache);
     }
 
@@ -96,7 +96,7 @@ class BufferCacheProvider implements IBufferCacheProvider {
     }
 }
 
-export function getFileSystemBufferCache(namespace: string, basePath: string): BufferCacheProvider {
-    const adapter = new FileSystemBufferCacheAdapter(basePath);
-    return new BufferCacheProvider(namespace, adapter);
+export function getFileSystemStringCache(namespace: string, basePath: string): StringCacheProvider {
+    const adapter = new FileSystemStringCacheAdapter(basePath);
+    return new StringCacheProvider(namespace, adapter);
 }
