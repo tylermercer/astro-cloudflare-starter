@@ -2,7 +2,8 @@ import { experimental_AstroContainer } from "astro/container";
 import satori, { type FontStyle, type FontWeight } from "satori";
 import { html as htmlToSatori } from "satori-html";
 import sharp from "sharp";
-import { generateCacheKey, type IBufferCacheProvider } from "../cache/BufferCache";
+import type { IBufferCacheProvider } from "../cache/BufferCache";
+import { generateCacheKey } from "../cache/generateCacheKey";
 
 interface FontOptions {
     data: Buffer | ArrayBuffer;
