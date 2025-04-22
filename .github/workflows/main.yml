@@ -29,9 +29,11 @@ jobs:
       - name: Checkout repository
         id: checkout_repo
         uses: actions/checkout@v4
-        # you can omit the next two lines for public repositories, which can be accessed without a personal access token
         with:
+          # you can omit this token for public repositories, which can be accessed without a personal access token
           token: ${{ secrets.GH_PAT }}
+          # clone the utils submodule. You can remove this if you bring the utils files into your repo, or if you don't use those files.
+          submodules: recursive
 
       - name: Cache assets
         uses: actions/cache@v3
