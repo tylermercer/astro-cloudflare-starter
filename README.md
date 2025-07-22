@@ -1,9 +1,9 @@
 # Astroflare
 
-An opinionated starter for Astro on Cloudflare, based on the setup I use for [Innerhelm](https://innerhelm.com), [Evelyn Escobar Art](https://evelynescobar.art), [my personal site](https://tylermercer.net), and other projects.
+An opinionated starter for Astro on Cloudflare Workers, based on the setup I use for [Innerhelm](https://innerhelm.com), [Evelyn Escobar Art](https://evelynescobar.art), [my personal site](https://tylermercer.net), and other projects.
 
-- Deploys to Cloudflare's global edge network
-- Uses GitHub actions for its deploy pipeline, powering daily builds and PR previews.
+- Deploys to Cloudflare's global edge network using Workers
+- Uses GitHub actions for its deploy pipeline, powering daily builds and PR previews
 - Uses the [@astrojs/cloudflare](https://docs.astro.build/en/guides/integrations-guide/cloudflare/) adapter and Astro's new intelligent `static` build mode. This allows you to opt-in to SSR on a per-route basis by adding `export const prerender = false` to a route.
 - Provides other niceties to speed up development, outlined [below](#features).
 
@@ -15,23 +15,25 @@ Install dependencies:
 npm install
 ```
 
-Update the project's `name` in `wrangler.toml`. Commit this change, but don't push yet:
+Update the project's `name` in `wrangler.jsonc`. Commit this change, but don't push yet:
 
-```toml
-name = "astroflare" # change this to what you want your Cloudflare project's name to be
+```jsonc
+{
+  "name": "astroflare" // change this to what you want your Cloudflare project's name to be
+}
 ```
 
-Build the site and deploy to Cloudflare. Wrangler will prompt you to create the Pages project as part of this step:
+Build the site and deploy to Cloudflare Workers:
 
 ```bash
 npm run build
-npx wrangler pages deploy
+npx wrangler deploy
 ```
 
 Configure the following secrets in your repository (Settings > Secrets and Variables > Actions > New Repository Secret):
 
 - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID. You can get this from the Cloudflare URL after logging in (which will be of the form `dash.cloudflare.com/[account-id]`)
-- `CLOUDFLARE_API_TOKEN` - A Cloudflare API token with the ability to modify your Pages project
+- `CLOUDFLARE_API_TOKEN` - A Cloudflare API token with Workers deployment permissions
 - `GH_PAT` - A [GitHub Personal Access Token](https://github.com/settings/tokens?type=beta) with read-only access to your repo's contents (only necessary for private repos).
 
 Push your repository to Github! You should see a pipeline run appear in the Actions tab of your repository. Once this completes successfully, your project is ready for development.
