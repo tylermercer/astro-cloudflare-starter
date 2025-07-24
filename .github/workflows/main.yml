@@ -3,7 +3,6 @@ name: Build and Deploy to Cloudflare Workers
 # Expects these secrets to be configured in your GitHub repo:
 # - CLOUDFLARE_API_TOKEN
 # - CLOUDFLARE_ACCOUNT_ID
-# - GH_PAT (for private repos)
 # and these variables:
 # - CLOUDFLARE_PROJECT_NAME
 
@@ -24,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           # you can omit this token for public repositories, which can be accessed without a personal access token
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ github.token }}
           # clone the utils submodule. You can remove this if you bring the utils files into your repo, or if you don't use those files.
           submodules: recursive
 
