@@ -6,6 +6,12 @@ const CF_TOKEN_URL = "https://dash.cloudflare.com/profile/api-tokens";
 
 async function checkDependencies() {
   try {
+    await $`pnpm --version`.quiet();
+  } catch (e) {
+    throw new Error("pnpm is not installed. Please install it with 'npm install -g pnpm' or visit https://pnpm.io/installation");
+  }
+
+  try {
     await $`gh --version`.quiet();
     const authStatus = await $`gh auth status`.quiet();
   } catch (e) {
@@ -18,15 +24,24 @@ async function main() {
 
   await checkDependencies();
 
+  console.log(`\x1b[34m[0/5]\x1b[0m Installing dependencies...`);
+  await $`pnpm install`;
+
   // 1. Get Repo Info for the Failure Link
   const repoPath = (await $`gh repo view --json nameWithOwner -q .nameWithOwner`.text()).trim();
   const actionsUrl = `https://github.com/${repoPath}/actions/runs/2`;
 
-  // 2. Rename Project
+  // 2. Project Customization
   const newProjectName = prompt("Enter your new project name (kebab-case):");
   if (!newProjectName) throw new Error("Project name is required.");
 
-  console.log(`\x1b[34m[1/5]\x1b[0m Renaming ${TEMPLATE_NAME} to ${newProjectName}...`);
+  const cfSubdomain = prompt("Enter your Cloudflare Workers subdomain:", "tmercer");
+  if (!cfSubdomain) throw new Error("Cloudflare subdomain is required.");
+
+  const themeColor = prompt("Enter a theme color Hex code (e.g. #CC5500, you can change this later):", "#CC5500");
+  if (!themeColor) throw new Error("Theme color is required.");
+
+  console.log(`\x1b[34m[1/5]\x1b[0m Customizing project...`);
   
   const filesToUpdate = [
     "./wrangler.jsonc", 
@@ -41,6 +56,15 @@ async function main() {
     } catch (e) {
       console.warn(`Could not update ${path}, skipping...`);
     }
+  }
+
+  // Update theme color
+  try {
+    const themePath = "./src/styles/theme.scss";
+    const themeContent = readFileSync(themePath, "utf-8");
+    writeFileSync(themePath, themeContent.replace(/\$themeColor:\s*#[0-9a-fA-F]{3,6};/, `$themeColor: ${themeColor};`));
+  } catch (e) {
+    console.warn(`Could not update theme color in src/styles/theme.scss, skipping...`);
   }
 
   // 3. Cloudflare Credentials
@@ -69,7 +93,7 @@ async function main() {
   await $`git push --force-with-lease`;
 
   // 5. Polling with 5-minute Timeout
-  const deployUrl = `https://${newProjectName}.tmercer.workers.dev`;
+  const deployUrl = `https://${newProjectName}.${cfSubdomain}.workers.dev`;
   console.log(`\x1b[34m[5/5]\x1b[0m Waiting for deployment at ${deployUrl}...`);
 
   const startTime = Date.now();

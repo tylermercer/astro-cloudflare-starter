@@ -9,34 +9,18 @@ An opinionated starter for Astro on Cloudflare Workers, based on the setup I use
 
 ## Getting started
 
-Install dependencies:
+1.  **Use this repo as a template** by clicking the "Use this template" button at the top of the GitHub page.
+2.  **Clone your new repository** to your local machine:
+    ```bash
+    git clone https://github.com/your-username/your-new-repo.git
+    cd your-new-repo
+    ```
+3.  **Run the initialization script** and follow the instructions:
+    ```bash
+    bun ./scripts/init.ts
+    ```
 
-```bash
-npm install
-```
-
-Update the project's `name` in `wrangler.jsonc`. Commit this change, but don't push yet:
-
-```jsonc
-{
-  "name": "astroflare" // change this to what you want your Cloudflare project's name to be
-}
-```
-
-Build the site and deploy to Cloudflare Workers:
-
-```bash
-npm run build
-npx wrangler deploy
-```
-
-Configure the following secrets in your repository (Settings > Secrets and Variables > Actions > New Repository Secret):
-
-- `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID. You can get this from the Cloudflare URL after logging in (which will be of the form `dash.cloudflare.com/[account-id]`)
-- `CLOUDFLARE_API_TOKEN` - A Cloudflare API token with Workers deployment permissions
-- `GH_PAT` - A [GitHub Personal Access Token](https://github.com/settings/tokens?type=beta) with read-only access to your repo's contents (only necessary for private repos).
-
-Push your repository to Github! You should see a pipeline run appear in the Actions tab of your repository. Once this completes successfully, your project is ready for development.
+The script will handle installing dependencies (via `pnpm`), customizing your project name and theme, and setting up the necessary GitHub Secrets for automatic deployment to Cloudflare.
 
 ## Features
 
