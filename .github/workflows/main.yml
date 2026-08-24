@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    if: github.event_name != 'push' || github.repository == 'tylermercer/astro-cloudflare-starter'
+    if: github.repository == 'tylermercer/astro-cloudflare-starter' # prevents failure before init; removed via init.ts
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
