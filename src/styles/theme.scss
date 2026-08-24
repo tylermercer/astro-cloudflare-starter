@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use 'node_modules/utopia-core-scss/src/utopia' as utopia;
 @use '../../lib/plugins/sass/radix-ui-colors/radix-color-mixin' as radix;
 
@@ -56,28 +57,41 @@
     $themeColor: #CC5500;
     $grayColor: #8b8d98;
 
-    @include radix.generateRadixScales('light',
-        $themeColor,
-        $grayColor,
-        #ffffff
-    );
+    @mixin apply-radix-scales($appearance) {
+        $background: #ffffff;
+        @if $appearance != 'light' {
+            $background: #111111;
+        }
+        $colors: generateRadixColors($appearance, '#{$themeColor}', '#{$grayColor}', '#{$background}');
 
-    @include radix.generateRadixScales('dark',
-        $themeColor,
-        $grayColor,
-        #111111
-    );
+        $accent-vars: radix.generate-css-variables('primary',
+            map.get($colors, 'accentScale'),
+            map.get($colors, 'accentScaleAlpha'),
+            map.get($colors, 'accentSurface'),
+            map.get($colors, 'accentContrast'));
+
+        $gray-vars: radix.generate-css-variables('gray',
+            map.get($colors, 'grayScale'),
+            map.get($colors, 'grayScaleAlpha'),
+            map.get($colors, 'graySurface'),
+            map.get($colors, 'grayContrast'));
+
+        @include radix.output-css-variables($accent-vars);
+        @include radix.output-css-variables($gray-vars);
+    }
 
     :root, .light, [data-theme="light"] {
         color-scheme: light;
         --danger: #d3003c;
         --danger-alt: #a3002f;
+        @include apply-radix-scales('light');
     }
 
     .dark, [data-theme="dark"] {
         color-scheme: dark;
         --danger: #d02354;
         --danger-alt: #fd316b;
+        @include apply-radix-scales('dark');
     }
 
     @media (prefers-color-scheme: dark) {
@@ -85,6 +99,7 @@
             color-scheme: dark;
             --danger: #d02354;
             --danger-alt: #fd316b;
+            @include apply-radix-scales('dark');
         }
     }
 }
