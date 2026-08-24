@@ -2,6 +2,7 @@ import { $ } from "bun";
 import { writeFileSync, readFileSync } from "node:fs";
 
 const TEMPLATE_NAME = "astroflare";
+const TEMPLATE_SUBDOMAIN = "tmercer";
 const CF_TOKEN_URL = "https://dash.cloudflare.com/profile/api-tokens";
 
 async function checkDependencies() {
@@ -46,13 +47,15 @@ async function main() {
   const filesToUpdate = [
     "./wrangler.jsonc", 
     "./.github/workflows/main.yml",
-    "./package.json"
+    "./package.json",
+    "./astro.config.mjs"
   ];
 
   for (const path of filesToUpdate) {
     try {
       let content = readFileSync(path, "utf-8");
       content = content.replaceAll(TEMPLATE_NAME, newProjectName);
+      content = content.replaceAll(TEMPLATE_SUBDOMAIN, cfSubdomain);
       if (path === "./.github/workflows/main.yml") {
         content = content.replace(/\n\s*if: github\.repository == 'tylermercer\/astro-cloudflare-starter' # prevents failure before init; removed via init\.ts/, "");
       }
