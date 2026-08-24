@@ -18,6 +18,7 @@ on:
 
 jobs:
   build:
+    if: github.event_name != 'push' || github.repository == 'tylermercer/astro-cloudflare-starter'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

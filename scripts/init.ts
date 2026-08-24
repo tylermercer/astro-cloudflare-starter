@@ -45,14 +45,18 @@ async function main() {
   
   const filesToUpdate = [
     "./wrangler.jsonc", 
-    "./.github/workflows/deploy.yml", 
+    "./.github/workflows/main.yml",
     "./package.json"
   ];
 
   for (const path of filesToUpdate) {
     try {
-      const content = readFileSync(path, "utf-8");
-      writeFileSync(path, content.replaceAll(TEMPLATE_NAME, newProjectName));
+      let content = readFileSync(path, "utf-8");
+      content = content.replaceAll(TEMPLATE_NAME, newProjectName);
+      if (path === "./.github/workflows/main.yml") {
+        content = content.replace(/\n\s*if: github\.event_name != 'push' \|\| github\.repository == 'tylermercer\/astro-cloudflare-starter'/, "");
+      }
+      writeFileSync(path, content);
     } catch (e) {
       console.warn(`Could not update ${path}, skipping...`);
     }
