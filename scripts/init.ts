@@ -54,7 +54,7 @@ async function main() {
       let content = readFileSync(path, "utf-8");
       content = content.replaceAll(TEMPLATE_NAME, newProjectName);
       if (path === "./.github/workflows/main.yml") {
-        content = content.replace(/\n\s*if: github\.event_name != 'push' \|\| github\.repository == 'tylermercer\/astro-cloudflare-starter'/, "");
+        content = content.replace(/\n\s*if: github\.repository == 'tylermercer\/astro-cloudflare-starter' # prevents failure before init; removed via init\.ts/, "");
       }
       writeFileSync(path, content);
     } catch (e) {
