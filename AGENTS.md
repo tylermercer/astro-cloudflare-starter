@@ -34,3 +34,15 @@ The `src/pages` directory is where Astro's file-based routing happens. Each `.as
 - **Static Routes**: Files like `src/pages/index.astro` create routes corresponding to their path (e.g., `/`).
 - **Dynamic Routes**: The project uses dynamic routes for content collections. For example, `src/pages/posts/[slug].astro` generates pages for individual blog posts. The `getStaticPaths` function in these files is responsible for determining which paths are generated at build time.
 - **API Routes**: Files in `src/pages/api/` are used to create API endpoints. For example, `src/pages/api/submit-form.ts`.
+
+## Testing Guidance (Vitest)
+
+This project uses [Vitest](https://vitest.dev/) for unit testing utility functions and helper modules.
+
+- **Running Tests**: Run unit tests once with `pnpm test` (`vitest run`) or in watch mode with `pnpm test:watch` (`vitest`).
+- **File Naming & Co-location**: Co-locate unit test files alongside the module they test, using the `.test.ts` (or `.spec.ts`) extension (e.g. `src/utils/logCommitHash.test.ts`).
+- **Import Aliases**: Vitest configuration (`vitest.config.ts`) resolves the same import aliases as `tsconfig.json` (`@utils/*`, `@components/*`, `@styles/*`, `@layouts/*`, `@assets/*`). Use path aliases in test files when referencing module code.
+- **Best Practices**:
+  - Always write unit tests when creating new utility functions or modifying existing ones in `src/utils/` or helper modules.
+  - Mock browser APIs (like `window.location` or `localStorage`) cleanly using Vitest utilities (`vi.fn()`, `vi.spyOn()`) and reset mocks after tests.
+  - Maintain thorough test coverage for edge cases, null/undefined inputs, and environment variable states.
