@@ -93,11 +93,10 @@ async function main() {
   await $`gh secret set CLOUDFLARE_API_TOKEN --body ${cfToken}`;
   await $`gh secret set CLOUDFLARE_ACCOUNT_ID --body ${cfAccountId}`;
 
-  console.log(`\x1b[34m[4/5]\x1b[0m Amending initial commit and force pushing...`);
+  console.log(`\x1b[34m[4/5]\x1b[0m Committing changes and pushing...`);
   await $`git add .`;
-  await $`git commit --amend --no-edit`;
-  // Use force-with-lease for safer force pushing
-  await $`git push --force-with-lease`;
+  await $`git commit -m "Project setup via init.ts"`;
+  await $`git push`;
 
   // 5. Polling with 5-minute Timeout
   const deployUrl = `https://${newProjectName}.${cfSubdomain}.workers.dev`;
