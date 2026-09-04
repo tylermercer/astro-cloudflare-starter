@@ -64,7 +64,7 @@ jobs:
       - name: Build site
         id: build_site
         env:
-          PUBLIC_COMMIT_HASH: ${{ github.sha }}
+          PUBLIC_COMMIT_HASH: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           pnpm install --frozen-lockfile
           pnpm build
