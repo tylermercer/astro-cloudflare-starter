@@ -10,10 +10,16 @@ on:
   push: # Run on pushes to main
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'design-docs/**'
   pull_request: # Run on pull requests
     types:
       - opened
       - synchronize
+    paths-ignore:
+      - 'README.md'
+      - 'design-docs/**'
   workflow_dispatch: # Allows running this workflow manually
 
 jobs:
